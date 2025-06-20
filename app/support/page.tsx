@@ -166,7 +166,7 @@ export default function SupportPage() {
           <div className="text-center">
             <Logo size="lg" className="mb-4" />
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Support Center</h1>
-            <p className="text-gray-600">Get help with your FK CRM account and applications</p>
+            <p className="text-gray-600">We&apos;re here to help you succeed in your academic journey</p>
           </div>
         </div>
       </header>
@@ -284,7 +284,7 @@ export default function SupportPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold">Contact Support</CardTitle>
               <CardDescription>
-                Can't find what you're looking for? Send us a message and we'll get back to you within 24 hours.
+                Can&apos;t find what you&apos;re looking for? We&apos;re here to help!
               </CardDescription>
             </CardHeader>
             <CardContent>

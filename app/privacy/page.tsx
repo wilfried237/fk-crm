@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
               <p className="text-gray-700 leading-relaxed">
-                FK CRM ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains 
+                FK CRM (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains 
                 how we collect, use, disclose, and safeguard your information when you use our customer relationship 
                 management platform and services.
               </p>
@@ -105,15 +105,12 @@ export default function PrivacyPage() {
               <p className="text-gray-700 mb-3">We do not sell, trade, or rent your personal information to third parties. We may share your information in the following circumstances:</p>
               
               <h3 className="text-xl font-semibold text-gray-800 mb-3">4.1 Service Providers</h3>
-              <p className="text-gray-700 mb-3">
-                We may share information with trusted third-party service providers who assist us in operating our Service:
+              <p className="text-gray-700 leading-relaxed">
+                We may share your information with third-party service providers who assist us in operating our platform, 
+                conducting our business, or servicing you, so long as those parties agree to keep this information 
+                confidential. We may also release your information when we believe release is appropriate to comply 
+                with the law, enforce our site policies, or protect ours or others&apos; rights, property, or safety.
               </p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Cloud hosting and infrastructure providers</li>
-                <li>Payment processors and billing services</li>
-                <li>Customer support and communication tools</li>
-                <li>Analytics and monitoring services</li>
-              </ul>
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-6">4.2 Legal Requirements</h3>
               <p className="text-gray-700">
@@ -207,7 +204,7 @@ export default function PrivacyPage() {
 
             {/* Children's Privacy */}
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Children's Privacy</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Children&apos;s Privacy</h2>
               <p className="text-gray-700">
                 Our Service is not intended for children under 16 years of age. We do not knowingly 
                 collect personal information from children under 16. If you believe we have collected 
