@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import { 
+  User, 
+  GraduationCap, 
   FileText, 
   MessageSquare, 
   Calendar, 
@@ -14,18 +16,33 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
+  MapPin,
+  Phone,
+  Mail,
+  Upload,
+  Download,
   Eye,
   Edit,
   Users,
+  Building,
+  Home,
   Share2,
   Copy,
-  Check
+  Check,
+  X,
+  FileUp,
+  FileCheck,
+  FileX
 } from 'lucide-react';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
+import { DocumentUpload } from "@/components/ui/document-upload"
 import { ApplicationForm } from '@/components/application-form';
+import Link from 'next/link';
 import { Footer } from '@/components/ui/footer';
 
 interface Student {
@@ -555,7 +572,7 @@ const CRMDemo = () => {
         <CardHeader>
           <CardTitle className="text-3xl">Welcome back, Sarah!</CardTitle>
           <CardDescription className="text-blue-100">
-            Your application is progressing well. Here&apos;s your latest update.
+            Your application is progressing well. Here's your latest update.
           </CardDescription>
         </CardHeader>
       </Card>
