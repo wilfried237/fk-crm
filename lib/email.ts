@@ -54,7 +54,7 @@ const getEmailProvider = () => {
 // Create transporter
 const createTransporter = () => {
   const config = getEmailProvider();
-  return nodemailer.createTransporter(config);
+  return nodemailer.createTransport(config);
 };
 
 // Send password reset email
