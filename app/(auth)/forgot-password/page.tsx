@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
           <div className="text-center mb-8">
             <Logo size="lg" className="mb-4" />
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your email</h1>
-            <p className="text-gray-600">We've sent you a password reset link</p>
+            <p className="text-gray-600">We&apos;ve sent you a password reset link</p>
           </div>
 
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
@@ -81,7 +81,7 @@ export default function ForgotPasswordPage() {
               </div>
               <CardTitle className="text-xl font-semibold text-center">Email Sent!</CardTitle>
               <CardDescription className="text-center">
-                We've sent a password reset link to
+                We&apos;ve sent a password reset link to
               </CardDescription>
               <div className="text-center">
                 <p className="text-sm font-medium text-gray-900 bg-gray-50 px-3 py-2 rounded-lg inline-block">
@@ -95,7 +95,7 @@ export default function ForgotPasswordPage() {
                 <div className="flex items-start">
                   <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
                   <div className="text-sm text-blue-800">
-                    <p className="font-medium mb-1">What's next?</p>
+                    <p className="font-medium mb-1">What&apos;s next?</p>
                     <ul className="space-y-1 text-blue-700">
                       <li>• Check your email inbox</li>
                       <li>• Click the reset link in the email</li>
@@ -173,14 +173,14 @@ export default function ForgotPasswordPage() {
         <div className="text-center mb-8">
           <Logo size="lg" className="mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Forgot your password?</h1>
-          <p className="text-gray-600">No worries, we'll send you reset instructions</p>
+          <p className="text-gray-600">No worries, we&apos;ll send you reset instructions</p>
         </div>
 
         <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-xl font-semibold text-center">Reset Password</CardTitle>
             <CardDescription className="text-center">
-              Enter your email address and we'll send you a link to reset your password
+              Enter your email address and we&apos;ll send you a link to reset your password
             </CardDescription>
           </CardHeader>
           
@@ -236,10 +236,10 @@ export default function ForgotPasswordPage() {
                 <div className="text-sm text-blue-800">
                   <p className="font-medium mb-1">What happens next?</p>
                   <ul className="space-y-1 text-blue-700">
-                    <li>• We'll send you an email with a reset link</li>
+                    <li>• We&apos;ll send you an email with a reset link</li>
                     <li>• Click the link to create a new password</li>
                     <li>• The link expires in 1 hour for security</li>
-                    <li>• Check your spam folder if you don't see it</li>
+                    <li>• Check your spam folder if you don&apos;t see it</li>
                   </ul>
                 </div>
               </div>

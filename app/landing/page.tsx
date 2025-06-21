@@ -97,7 +97,7 @@ export default function LandingPage() {
       name: "Sarah Johnson",
       role: "Admissions Director",
       company: "University of Manchester",
-      content: "FK CRM has revolutionized our admissions process. We've seen a 40% increase in application processing speed and improved student satisfaction significantly.",
+      content: "FK CRM has revolutionized our admissions process. We&apos;ve seen a 40% increase in application processing speed and improved student satisfaction significantly.",
       rating: 5,
       avatar: "SJ"
     },
@@ -366,7 +366,7 @@ export default function LandingPage() {
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <p className="text-gray-700 mb-6 italic">"{testimonial.content}"</p>
+                <p className="text-gray-700 mb-6 italic">&quot;{testimonial.content}&quot;</p>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-4">
                     {testimonial.avatar}

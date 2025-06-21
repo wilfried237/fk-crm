@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
               <p className="text-gray-700 leading-relaxed">
-                FK CRM ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains 
+                FK CRM (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains 
                 how we collect, use, disclose, and safeguard your information when you use our customer relationship 
                 management platform and services.
               </p>
@@ -207,7 +207,7 @@ export default function PrivacyPage() {
 
             {/* Children's Privacy */}
             <section>
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Children's Privacy</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Children&apos;s Privacy</h2>
               <p className="text-gray-700">
                 Our Service is not intended for children under 16 years of age. We do not knowingly 
                 collect personal information from children under 16. If you believe we have collected 

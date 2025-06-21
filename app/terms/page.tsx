@@ -43,7 +43,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
               <p className="text-gray-700 leading-relaxed">
-                Welcome to FK CRM ("we," "our," or "us"). These Terms and Conditions govern your use of our 
+                Welcome to FK CRM (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;). These Terms and Conditions govern your use of our 
                 customer relationship management platform and services. By accessing or using our services, 
                 you agree to be bound by these terms.
               </p>
@@ -53,10 +53,10 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Definitions</h2>
               <div className="space-y-3">
-                <p className="text-gray-700"><strong>"Service"</strong> refers to the FK CRM platform and all related features.</p>
-                <p className="text-gray-700"><strong>"User"</strong> refers to any individual or entity using our Service.</p>
-                <p className="text-gray-700"><strong>"Content"</strong> refers to all data, information, and materials uploaded to our Service.</p>
-                <p className="text-gray-700"><strong>"Account"</strong> refers to your registered profile on our platform.</p>
+                <p className="text-gray-700"><strong>&quot;Service&quot;</strong> refers to the FK CRM platform and all related features.</p>
+                <p className="text-gray-700"><strong>&quot;User&quot;</strong> refers to any individual or entity using our Service.</p>
+                <p className="text-gray-700"><strong>&quot;Content&quot;</strong> refers to all data, information, and materials uploaded to our Service.</p>
+                <p className="text-gray-700"><strong>&quot;Account&quot;</strong> refers to your registered profile on our platform.</p>
               </div>
             </section>
 
@@ -87,7 +87,7 @@ export default function TermsPage() {
                   <li>Infringe on intellectual property rights</li>
                   <li>Transmit harmful, offensive, or inappropriate content</li>
                   <li>Attempt to gain unauthorized access to our systems</li>
-                  <li>Interfere with the Service's operation or other users</li>
+                  <li>Interfere with the Service&apos;s operation or other users</li>
                   <li>Use automated systems to access the Service</li>
                   <li>Resell or redistribute our Service without permission</li>
                 </ul>

@@ -392,7 +392,7 @@ const CRMDemo = () => {
         <CardHeader>
           <CardTitle className="text-3xl">Welcome back, Sarah!</CardTitle>
           <CardDescription className="text-blue-100">
-            Your application is progressing well. Here's your latest update.
+            Your application is progressing well. Here&apos;s your latest update.
           </CardDescription>
         </CardHeader>
       </Card>

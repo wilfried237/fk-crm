@@ -139,7 +139,7 @@ export default function SupportPage() {
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Message Sent Successfully!</h1>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">
-              Thank you for contacting us. We've received your message and will get back to you within 24 hours.
+              Thank you for contacting us. We&apos;ve received your message and will get back to you within 24 hours.
             </p>
             <div className="space-y-4">
               <Button onClick={() => setIsContactFormSubmitted(false)}>
@@ -284,7 +284,7 @@ export default function SupportPage() {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold">Contact Support</CardTitle>
               <CardDescription>
-                Can't find what you're looking for? Send us a message and we'll get back to you within 24 hours.
+                Can&apos;t find what you&apos;re looking for? Send us a message and we&apos;ll get back to you within 24 hours.
               </CardDescription>
             </CardHeader>
             <CardContent>

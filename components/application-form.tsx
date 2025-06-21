@@ -203,6 +203,7 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
             : file
         )
       }));
+      console.error('File upload error:', error);
     }
   }, []);
 
@@ -469,7 +470,7 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
                   <option value="University of Oxford">University of Oxford</option>
                   <option value="Imperial College London">Imperial College London</option>
                   <option value="University of Manchester">University of Manchester</option>
-                  <option value="King's College London">King's College London</option>
+                  <option value="King's College London">King&apos;s College London</option>
                   <option value="University of Edinburgh">University of Edinburgh</option>
                 </select>
                       </FormControl>
