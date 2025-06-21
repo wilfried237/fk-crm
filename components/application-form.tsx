@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -67,6 +67,7 @@ interface ApplicationFormProps {
 
 export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [progress, setProgress] = useState(0);
   const [documents, setDocuments] = useState<FormData['documents']>({
     passport: [],
     transcripts: [],
@@ -98,6 +99,60 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
     notes: '',
     }
   });
+
+  // Watch form values for real-time progress calculation
+  const formValues = form.watch();
+
+  // Calculate progress whenever form values or documents change
+  useEffect(() => {
+    const calculateProgress = () => {
+      // Define required form fields (excluding optional ones)
+      const requiredFormFields = [
+        'firstName',
+        'lastName', 
+        'email',
+        'phone',
+        'dateOfBirth',
+        'nationality',
+        'homeAddress',
+        'university',
+        'course',
+        'courseLevel',
+        'preferredIntake',
+        'previousEducation',
+        'englishProficiency',
+        'emergencyContact',
+        'emergencyPhone'
+      ];
+    
+      // Count filled required form fields
+      const filledFormFields = requiredFormFields.filter(field => {
+        const value = formValues[field as keyof typeof formValues];
+        return value && typeof value === 'string' && value.trim() !== '';
+      }).length;
+    
+      // Define required document types
+      const requiredDocumentTypes = ['passport', 'transcripts', 'englishTest', 'personalStatement', 'references'];
+      
+      // Count uploaded document types (at least one file uploaded for each type)
+      const uploadedDocumentTypes = requiredDocumentTypes.filter(docType => {
+        const docFiles = documents[docType as keyof FormData['documents']];
+        return docFiles && docFiles.length > 0 && docFiles.some(file => file.status === 'uploaded');
+      }).length;
+    
+      // Calculate total progress
+      const totalRequiredItems = requiredFormFields.length + requiredDocumentTypes.length;
+      const totalCompletedItems = filledFormFields + uploadedDocumentTypes;
+      
+      const progressPercentage = totalRequiredItems > 0 
+        ? Math.round((totalCompletedItems / totalRequiredItems) * 100) 
+        : 0;
+    
+      setProgress(progressPercentage);
+    };
+
+    calculateProgress();
+  }, [formValues, documents]);
 
   // Generate preview URL for image files
   const generatePreview = (file: File): string | undefined => {
@@ -212,28 +267,6 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
       setIsSubmitting(false);
     }
   };
-
-  // Progress calculation
-  const calculateProgress = useCallback(() => {
-    const requiredFields = Object.keys(applicationSchema.shape);
-    const filledFields = requiredFields.filter(field => {
-      const value = form.getValues(field as keyof z.infer<typeof applicationSchema>);
-      return value && value !== '';
-    });
-
-    // Check document uploads
-    const requiredDocuments = ['passport', 'transcripts', 'englishTest', 'personalStatement', 'references'];
-    const uploadedDocuments = requiredDocuments.filter(docType => 
-      documents[docType as keyof FormData['documents']].length > 0
-    );
-
-    const totalRequired = requiredFields.length + requiredDocuments.length;
-    const totalCompleted = filledFields.length + uploadedDocuments.length;
-    
-    return Math.round((totalCompleted / totalRequired) * 100);
-  }, [form, documents]);
-
-  const progress = calculateProgress();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

@@ -2,8 +2,6 @@
 
 import React, { useState } from 'react';
 import { 
-  User, 
-  GraduationCap, 
   FileText, 
   MessageSquare, 
   Calendar, 
@@ -16,33 +14,18 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  MapPin,
-  Phone,
-  Mail,
-  Upload,
-  Download,
   Eye,
   Edit,
   Users,
-  Building,
-  Home,
   Share2,
   Copy,
   Check,
-  X,
-  FileUp,
-  FileCheck,
-  FileX
 } from 'lucide-react';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { DocumentUpload } from "@/components/ui/document-upload"
 import { ApplicationForm } from '@/components/application-form';
-import Link from 'next/link';
 import { Footer } from '@/components/ui/footer';
 
 interface Student {
@@ -60,84 +43,13 @@ interface Student {
   intake: string;
 }
 
-interface DocumentUploadState {
-  type: string;
-  file: File | null;
-  status: 'pending' | 'uploaded' | 'error';
-  error?: string;
-}
-
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  dateOfBirth: string;
-  nationality: string;
-  homeAddress: string;
-  university: string;
-  course: string;
-  courseLevel: string;
-  preferredIntake: string;
-  previousEducation: string;
-  englishProficiency: string;
-  englishScore: string;
-  hasPassport: boolean;
-  hasTranscripts: boolean;
-  hasEnglishTest: boolean;
-  hasPersonalStatement: boolean;
-  hasReferences: boolean;
-  financialSupport: string;
-  emergencyContact: string;
-  emergencyPhone: string;
-  notes: string;
-  documents: {
-    passport: DocumentUploadState;
-    transcripts: DocumentUploadState;
-    englishTest: DocumentUploadState;
-    personalStatement: DocumentUploadState;
-    references: DocumentUploadState;
-  };
-}
 
 const CRMDemo = () => {
   const [activeView, setActiveView] = useState<'dashboard' | 'students' | 'application'>('dashboard');
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [, setSelectedStudent] = useState<Student | null>(null);
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    nationality: '',
-    homeAddress: '',
-    university: '',
-    course: '',
-    courseLevel: '',
-    preferredIntake: '',
-    previousEducation: '',
-    englishProficiency: '',
-    englishScore: '',
-    hasPassport: false,
-    hasTranscripts: false,
-    hasEnglishTest: false,
-    hasPersonalStatement: false,
-    hasReferences: false,
-    financialSupport: '',
-    emergencyContact: '',
-    emergencyPhone: '',
-    notes: '',
-    documents: {
-      passport: { type: 'passport', file: null, status: 'pending' },
-      transcripts: { type: 'transcripts', file: null, status: 'pending' },
-      englishTest: { type: 'englishTest', file: null, status: 'pending' },
-      personalStatement: { type: 'personalStatement', file: null, status: 'pending' },
-      references: { type: 'references', file: null, status: 'pending' }
-    }
-  });
 
   // Sample data
   const students: Student[] = [
@@ -196,52 +108,6 @@ const CRMDemo = () => {
     return colors[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const handleInputChange = (field: keyof FormData, value: string | boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
-
-  const handleSubmitApplication = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would normally submit to your backend
-    console.log('Application submitted:', formData);
-    setShowApplicationForm(false);
-    // Reset form
-    setFormData({
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      dateOfBirth: '',
-      nationality: '',
-      homeAddress: '',
-      university: '',
-      course: '',
-      courseLevel: '',
-      preferredIntake: '',
-      previousEducation: '',
-      englishProficiency: '',
-      englishScore: '',
-      hasPassport: false,
-      hasTranscripts: false,
-      hasEnglishTest: false,
-      hasPersonalStatement: false,
-      hasReferences: false,
-      financialSupport: '',
-      emergencyContact: '',
-      emergencyPhone: '',
-      notes: '',
-      documents: {
-        passport: { type: 'passport', file: null, status: 'pending' },
-        transcripts: { type: 'transcripts', file: null, status: 'pending' },
-        englishTest: { type: 'englishTest', file: null, status: 'pending' },
-        personalStatement: { type: 'personalStatement', file: null, status: 'pending' },
-        references: { type: 'references', file: null, status: 'pending' }
-      }
-    });
-  };
 
   const handleShareLink = () => {
     setShowShareDialog(true);
@@ -250,52 +116,6 @@ const CRMDemo = () => {
     navigator.clipboard.writeText(registrationLink);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleFileUpload = async (type: keyof FormData['documents'], file: File) => {
-    try {
-      // Simulate file upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setFormData(prev => ({
-        ...prev,
-        documents: {
-          ...prev.documents,
-          [type]: {
-            type,
-            file,
-            status: 'uploaded'
-          }
-        }
-      }));
-    } catch (error) {
-      setFormData(prev => ({
-        ...prev,
-        documents: {
-          ...prev.documents,
-          [type]: {
-            type,
-            file: null,
-            status: 'error',
-            error: 'Failed to upload file'
-          }
-        }
-      }));
-    }
-  };
-
-  const handleFileRemove = (type: keyof FormData['documents']) => {
-    setFormData(prev => ({
-      ...prev,
-      documents: {
-        ...prev.documents,
-        [type]: {
-          type,
-          file: null,
-          status: 'pending'
-        }
-      }
-    }));
   };
 
   const ShareDialog = () => (
@@ -791,8 +611,14 @@ const CRMDemo = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeView === 'dashboard' && <AdminDashboard />}
         {activeView === 'students' && <StudentDashboard />}
-        {activeView === 'application' && <ApplicationForm onClose={() => {}} onSubmit={() => {}} />}
-        {showApplicationForm && <ApplicationForm onClose={() => {}} onSubmit={() => {}} />}
+        {activeView === 'application' && <ApplicationForm onClose={() => {
+          setActiveView('dashboard');
+        }} onSubmit={() => {}} />}
+        {showApplicationForm && <ApplicationForm 
+                                  onClose={() => { 
+                                    setShowApplicationForm(false);
+                                  }} 
+                                  onSubmit={() => {}} />}
         {showShareDialog && <ShareDialog />}
       </main>
 
