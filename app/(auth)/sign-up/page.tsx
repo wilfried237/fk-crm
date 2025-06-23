@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Mail, Lock, User, Building, ArrowRight, Github, Chrome, Check } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Github, Chrome, Check } from 'lucide-react';
 import Link from 'next/link';
+import axios from 'axios';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -13,12 +14,14 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/ui/logo"
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import useAxiosErrorHandler from '@/hooks/useAxiosHandler';
 
 const signUpSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
-  company: z.string().min(2, "Company name must be at least 2 characters"),
   password: z.string()
     .min(8, "Password must be at least 8 characters")
     .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
@@ -34,14 +37,14 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
+  const { handleError } = useAxiosErrorHandler();
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
       email: '',
-      company: '',
       password: '',
       confirmPassword: '',
     }
@@ -51,12 +54,21 @@ export default function SignUpPage() {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Sign up values:', values);
-      // Handle sign up logic here
-    } catch (error) {
-      console.error('Sign up error:', error);
-    } finally {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, values);
+
+      console.log(response);
+      if(response.status === 201 ){
+        toast.success('Sign up successful, please check your email for verification');
+        console.log('Sign up successful:', response.data);
+        // redirect to sign in page
+        router.push("/sign-in");
+      }
+      else{
+        handleError(response);
+      }
+    } catch (error: any) {
+      handleError(error);
+  } finally {
       setIsLoading(false);
     }
   };
@@ -166,29 +178,6 @@ export default function SignUpPage() {
                           <Input
                             type="email"
                             placeholder="john.doe@company.com"
-                            className="pl-10"
-                            disabled={isLoading}
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Company Field */}
-                <FormField
-                  control={form.control}
-                  name="company"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Company/Institution</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                          <Input
-                            placeholder="Your Company Name"
                             className="pl-10"
                             disabled={isLoading}
                             {...field}
