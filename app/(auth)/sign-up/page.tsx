@@ -6,7 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Github, Chrome, Check } from 'lucide-react';
 import Link from 'next/link';
-import axios from 'axios';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -14,9 +16,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { Separator } from "@/components/ui/separator"
 import { Logo } from "@/components/ui/logo"
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import useAxiosErrorHandler from '@/hooks/useAxiosHandler';
 
 const signUpSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -37,8 +36,10 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
   const router = useRouter();
-  const { handleError } = useAxiosErrorHandler();
+  
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -53,23 +54,84 @@ export default function SignUpPage() {
   const onSubmit = async (values: SignUpForm) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, values);
+      // First, create the user account using our local API
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          password: values.password,
+        }),
+      });
 
-      console.log(response);
-      if(response.status === 201 ){
-        toast.success('Sign up successful, please check your email for verification');
-        console.log('Sign up successful:', response.data);
-        // redirect to sign in page
-        router.push("/sign-in");
-      }
-      else{
-        handleError(response);
+      if (response.ok) {
+        // Then sign in the user with NextAuth credentials
+        const result = await signIn('credentials', {
+          email: values.email,
+          password: values.password,
+          redirect: false,
+        });
+
+        if (result?.error) {
+          toast.error('Sign up successful but login failed. Please sign in manually.');
+          router.push('/sign-in');
+        } else {
+          toast.success('Account created successfully!');
+          router.push('/dashboard');
+        }
+      } else {
+        const error = await response.text();
+        toast.error(error || 'Failed to create account');
       }
     } catch (error: any) {
-      handleError(error);
-  } finally {
+      toast.error('An error occurred during sign up');
+      console.error('Sign up error:', error);
+    } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/dashboard',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('Google sign in failed');
+      } else if (result?.url) {
+        router.push(result.url);
+      }
+    } catch (error) {
+      toast.error('An error occurred during Google sign in');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGitHubSignIn = async () => {
+    setIsGitHubLoading(true);
+    try {
+      const result = await signIn('github', {
+        callbackUrl: '/dashboard',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('GitHub sign in failed');
+      } else if (result?.url) {
+        router.push(result.url);
+      }
+    } catch (error) {
+      toast.error('An error occurred during GitHub sign in');
+    } finally {
+      setIsGitHubLoading(false);
     }
   };
 
@@ -335,13 +397,23 @@ export default function SignUpPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="w-full" disabled={isLoading}>
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
-              </Button>
-              <Button variant="outline" className="w-full" disabled={isLoading}>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                disabled={isGoogleLoading}
+                onClick={handleGoogleSignIn}
+              >
                 <Chrome className="h-4 w-4 mr-2" />
                 Google
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                disabled={isGitHubLoading}
+                onClick={handleGitHubSignIn}
+              >
+                <Github className="h-4 w-4 mr-2" />
+                GitHub
               </Button>
             </div>
           </CardContent>

@@ -1,11 +1,14 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Github, Chrome } from 'lucide-react';
 import Link from 'next/link';
+import { signIn} from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -24,6 +27,10 @@ type SignInForm = z.infer<typeof signInSchema>;
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
@@ -33,17 +40,96 @@ export default function SignInPage() {
     }
   });
 
+  // Handle authentication errors from URL params
+  useEffect(() => {
+    const error = searchParams.get('error');
+    if (error) {
+      let errorMessage = 'An error occurred during sign in';
+      
+      switch (error) {
+        case 'CredentialsSignin':
+          errorMessage = 'Invalid email or password';
+          break;
+        case 'OAuthSignin':
+          errorMessage = 'OAuth sign in failed';
+          break;
+        case 'OAuthCallback':
+          errorMessage = 'OAuth callback failed';
+          break;
+        case 'OAuthCreateAccount':
+          errorMessage = 'Could not create OAuth account';
+          break;
+        case 'OAuthAccountNotLinked':
+          errorMessage = 'Email already exists with different provider';
+          break;
+        default:
+          errorMessage = 'An error occurred during authentication';
+      }
+      
+      toast.error(errorMessage);
+    }
+  }, [searchParams]);
+
   const onSubmit = async (values: SignInForm) => {
     setIsLoading(true);
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Sign in values:', values);
-      // Handle sign in logic here
+      const result = await signIn('credentials', {
+        email: values.email,
+        password: values.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('Invalid email or password');
+      } else {
+        toast.success('Signed in successfully!');
+        router.push('/dashboard');
+      }
     } catch (error) {
+      toast.error('An error occurred during sign in');
       console.error('Sign in error:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const result = await signIn('google', {
+        callbackUrl: '/dashboard',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('Google sign in failed');
+      } else if (result?.url) {
+        router.push(result.url);
+      }
+    } catch (error) {
+      toast.error('An error occurred during Google sign in');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGitHubSignIn = async () => {
+    setIsGitHubLoading(true);
+    try {
+      const result = await signIn('github', {
+        callbackUrl: '/dashboard',
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast.error('GitHub sign in failed');
+      } else if (result?.url) {
+        router.push(result.url);
+      }
+    } catch (error) {
+      toast.error('An error occurred during GitHub sign in');
+    } finally {
+      setIsGitHubLoading(false);
     }
   };
 
@@ -170,13 +256,23 @@ export default function SignInPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" className="w-full" disabled={isLoading}>
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
-              </Button>
-              <Button variant="outline" className="w-full" disabled={isLoading}>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                disabled={isGoogleLoading}
+                onClick={handleGoogleSignIn}
+              >
                 <Chrome className="h-4 w-4 mr-2" />
                 Google
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                disabled={isGitHubLoading}
+                onClick={handleGitHubSignIn}
+              >
+                <Github className="h-4 w-4 mr-2" />
+                GitHub
               </Button>
             </div>
           </CardContent>

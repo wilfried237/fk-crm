@@ -1,37 +1,127 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+import { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { prisma } from "@/lib/prisma";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-const JWT_EXPIRES_IN = '7d';
+export const authOptions: NextAuthOptions = {
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
+    }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
+        }
 
-export interface JWTPayload {
-  userId: string;
-  email: string;
-  role: string;
-}
+        try {
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email
+            }
+          });
 
-export const hashPassword = async (password: string): Promise<string> => {
-  const saltRounds = 12;
-  return bcrypt.hash(password, saltRounds);
-};
+          if (!user) {
+            throw new Error("User not found");
+          }
 
-export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-  return bcrypt.compare(password, hashedPassword);
-};
+          // Check if user has a password (OAuth users might not have one)
+          if (!user.password) {
+            throw new Error("Invalid credentials");
+          }
 
-export const generateToken = (payload: JWTPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
-};
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
 
-export const verifyToken = (token: string): JWTPayload | null => {
-  try {
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
-  } catch (error) {
-    console.error('Token verification error:', error);
-    return null;
-  }
-};
+          if (!isPasswordValid) {
+            throw new Error("Invalid credentials");
+          }
 
-export const generateResetToken = (): string => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error('Credentials authorization error:', error);
+          throw error;
+        }
+      }
+    })
+  ],
+  session: {
+    strategy: "jwt",
+  },
+  callbacks: {
+    async signIn({ user, account}) {
+      // Handle OAuth sign-in
+      if (account?.provider === "google" || account?.provider === "github") {
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! }
+        });
+
+        if (!existingUser) {
+          // Create new user for OAuth
+          const newUser = await prisma.user.create({
+            data: {
+              email: user.email!,
+              name: user.name!,
+              image: user.image!,
+              role: "USER",
+              emailVerified: new Date(),
+            }
+          });
+          user.id = newUser.id;
+          user.role = newUser.role;
+        } else {
+          // Update existing user with OAuth info
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              name: user.name || existingUser.name,
+              image: user.image || existingUser.image,
+              emailVerified: new Date(),
+            }
+          });
+          user.id = existingUser.id;
+          user.role = existingUser.role;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user}) {
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/sign-in",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
 }; 

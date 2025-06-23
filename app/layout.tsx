@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 import type { Metadata } from 'next'
+import AuthProvider from '@/components/providers/session-provider'
 
 export const metadata: Metadata = {
   title: 'Student CRM',
@@ -15,8 +16,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
-        <Toaster />
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   )
