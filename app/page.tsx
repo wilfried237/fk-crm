@@ -1,631 +1,411 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
+  ArrowRight, 
+  CheckCircle, 
+  Users, 
   FileText, 
-  MessageSquare, 
-  Calendar, 
   BarChart3, 
-  Settings, 
-  Bell, 
-  Search, 
-  Plus, 
-  Filter,
-  CheckCircle,
+  Shield, 
+  Zap, 
+  Globe,
+  Star,
+  Play,
+  ChevronDown,
+  ChevronUp,
+  Building,
   Clock,
-  AlertCircle,
-  Eye,
-  Edit,
-  Users,
-  Share2,
-  Copy,
-  Check,
+  MessageSquare
 } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
+import { Footer } from "@/components/ui/footer";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { ApplicationForm } from '@/components/application-form';
-import { Footer } from '@/components/ui/footer';
-
-interface Student {
-  id: number;
-  name: string;
-  email: string;
-  country: string;
-  course: string;
-  university: string;
-  status: string;
-  stage: number;
-  leadScore: number;
-  phone: string;
-  englishLevel: string;
-  intake: string;
+interface Feature {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  color: string;
 }
 
+interface Testimonial {
+  name: string;
+  role: string;
+  company: string;
+  content: string;
+  rating: number;
+  avatar: string;
+}
 
-const CRMDemo = () => {
-  const [activeView, setActiveView] = useState<'dashboard' | 'students' | 'application'>('dashboard');
-  const [, setSelectedStudent] = useState<Student | null>(null);
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  const [copied, setCopied] = useState(false);
+interface Stat {
+  number: string;
+  label: string;
+  icon: React.ReactNode;
+}
 
-  // Sample data
-  const students: Student[] = [
+export default function LandingPage() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const features: Feature[] = [
     {
-      id: 1,
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@email.com',
-      country: 'Nigeria',
-      course: 'MSc Computer Science',
-      university: 'University of Manchester',
-      status: 'Application Submitted',
-      stage: 2,
-      leadScore: 85,
-      phone: '+234 901 234 5678',
-      englishLevel: 'IELTS 7.0',
-      intake: 'September 2025'
+      icon: <Users className="h-8 w-8" />,
+      title: "Student Management",
+      description: "Comprehensive student profiles with academic tracking, application status, and communication history.",
+      color: "from-blue-500 to-blue-600"
     },
     {
-      id: 2,
-      name: 'Ahmed Hassan',
-      email: 'ahmed.hassan@email.com',
-      country: 'Egypt',
-      course: 'MBA',
-      university: 'Imperial College London',
-      status: 'Offer Received',
-      stage: 3,
-      leadScore: 92,
-      phone: '+20 12 345 6789',
-      englishLevel: 'TOEFL 95',
-      intake: 'January 2026'
+      icon: <FileText className="h-8 w-8" />,
+      title: "Document Management",
+      description: "Advanced document upload system with drag & drop, preview, and secure storage capabilities.",
+      color: "from-green-500 to-green-600"
     },
     {
-      id: 3,
-      name: 'Priya Sharma',
-      email: 'priya.sharma@email.com',
-      country: 'India',
-      course: 'BSc Engineering',
-      university: 'University of Cambridge',
-      status: 'Visa Processing',
-      stage: 4,
-      leadScore: 78,
-      phone: '+91 98765 43210',
-      englishLevel: 'IELTS 6.5',
-      intake: 'September 2025'
+      icon: <BarChart3 className="h-8 w-8" />,
+      title: "Analytics Dashboard",
+      description: "Real-time insights into application trends, conversion rates, and performance metrics.",
+      color: "from-purple-500 to-purple-600"
+    },
+    {
+      icon: <Shield className="h-8 w-8" />,
+      title: "Security & Compliance",
+      description: "GDPR compliant with enterprise-grade security, data encryption, and privacy protection.",
+      color: "from-red-500 to-red-600"
+    },
+    {
+      icon: <Zap className="h-8 w-8" />,
+      title: "Automated Workflows",
+      description: "Streamlined processes with automated notifications, reminders, and status updates.",
+      color: "from-yellow-500 to-yellow-600"
+    },
+    {
+      icon: <Globe className="h-8 w-8" />,
+      title: "Multi-Platform Access",
+      description: "Access your CRM from anywhere with responsive design for desktop, tablet, and mobile.",
+      color: "from-indigo-500 to-indigo-600"
     }
   ];
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'New Inquiry': 'bg-blue-100 text-blue-800',
-      'Application Submitted': 'bg-yellow-100 text-yellow-800',
-      'Offer Received': 'bg-green-100 text-green-800',
-      'Visa Processing': 'bg-purple-100 text-purple-800',
-      'Enrolled': 'bg-emerald-100 text-emerald-800'
-    };
-    return colors[status] || 'bg-gray-100 text-gray-800';
-  };
+  const testimonials: Testimonial[] = [
+    {
+      name: "Sarah Johnson",
+      role: "Admissions Director",
+      company: "University of Manchester",
+      content: "FK CRM has revolutionized our admissions process. We&apos;ve seen a 40% increase in application processing speed and improved student satisfaction significantly.",
+      rating: 5,
+      avatar: "SJ"
+    },
+    {
+      name: "Dr. Ahmed Hassan",
+      role: "International Relations",
+      company: "Imperial College London",
+      content: "The document management system is exceptional. It handles multiple file formats seamlessly and the progress tracking keeps everyone informed.",
+      rating: 5,
+      avatar: "AH"
+    },
+    {
+      name: "Priya Sharma",
+      role: "Student Services Manager",
+      company: "University of Cambridge",
+      content: "The analytics dashboard provides invaluable insights. We can now make data-driven decisions to improve our international student recruitment.",
+      rating: 5,
+      avatar: "PS"
+    }
+  ];
 
+  const stats: Stat[] = [
+    { number: "10,000+", label: "Students Managed", icon: <Users className="h-6 w-6" /> },
+    { number: "50+", label: "Universities", icon: <Building className="h-6 w-6" /> },
+    { number: "99.9%", label: "Uptime", icon: <Clock className="h-6 w-6" /> },
+    { number: "24/7", label: "Support", icon: <MessageSquare className="h-6 w-6" /> }
+  ];
 
-  const handleShareLink = () => {
-    setShowShareDialog(true);
-    // In a real application, you would generate a unique registration link
-    const registrationLink = `${window.location.origin}/apply?ref=ADMIN123`;
-    navigator.clipboard.writeText(registrationLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const ShareDialog = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-lg w-full">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Share Registration Link</CardTitle>
-            <Button
-              variant="ghost"
-              onClick={() => setShowShareDialog(false)}
-              className="p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <span className="text-2xl text-gray-500">&times;</span>
-            </Button>
-            </div>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Share this link with potential students to allow them to register and submit their applications.
-            </p>
-            <div className="flex items-center space-x-2">
-              <Input
-                value={`${window.location.origin}/apply?ref=ADMIN123`}
-                readOnly
-                className="flex-1"
-              />
-              <Button
-                variant="outline"
-                onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/apply?ref=ADMIN123`);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2000);
-                }}
-              >
-                {copied ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2" />
-                    Copied
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copy
-                  </>
-                )}
-              </Button>
-          </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <AlertCircle className="h-4 w-4" />
-              <span>This link will expire in 7 days</span>
-        </div>
-            </div>
-        </CardContent>
-        <CardFooter className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={() => setShowShareDialog(false)}>
-            Close
-          </Button>
-          <Button onClick={() => {
-            // In a real application, you would implement email sharing
-            alert('Email sharing functionality would be implemented here');
-          }}>
-            Share via Email
-          </Button>
-        </CardFooter>
-      </Card>
-          </div>
-  );
-
-  const AdminDashboard = () => (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Applications</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">847</div>
-            <p className="text-xs text-muted-foreground">
-              +20.1% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">73%</div>
-            <p className="text-xs text-muted-foreground">
-              +4.2% from last month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Visas</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">142</div>
-            <p className="text-xs text-muted-foreground">
-              +12 new this week
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">This Month</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">67</div>
-            <p className="text-xs text-muted-foreground">
-              +8 new applications
-            </p>
-          </CardContent>
-        </Card>
-        </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Button 
-                onClick={() => setShowApplicationForm(true)}
-                className="w-full"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Student Manually
-              </Button>
-              <Button 
-                onClick={handleShareLink}
-                variant="outline"
-                className="w-full"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                Share Registration Link
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { action: 'New Application', student: 'John Doe', time: '2 hours ago' },
-                { action: 'Document Uploaded', student: 'Sarah Smith', time: '4 hours ago' },
-                { action: 'Application Status Updated', student: 'Mike Johnson', time: '1 day ago' }
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-            <div>
-                    <p className="font-medium text-gray-900">{activity.action}</p>
-                    <p className="text-sm text-gray-500">{activity.student}</p>
-            </div>
-                  <span className="text-sm text-gray-500">{activity.time}</span>
-          </div>
-              ))}
-        </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Students Table */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Recent Applications</CardTitle>
-            <div className="flex space-x-3">
-              <Button 
-                onClick={() => setShowApplicationForm(true)}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Student
-              </Button>
-              <Button variant="outline">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left py-3 px-6 font-medium text-gray-500">Student</th>
-                <th className="text-left py-3 px-6 font-medium text-gray-500">Course</th>
-                <th className="text-left py-3 px-6 font-medium text-gray-500">University</th>
-                <th className="text-left py-3 px-6 font-medium text-gray-500">Status</th>
-                <th className="text-left py-3 px-6 font-medium text-gray-500">Lead Score</th>
-                <th className="text-left py-3 px-6 font-medium text-gray-500">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student) => (
-                <tr key={student.id} className="border-t border-gray-100 hover:bg-gray-50">
-                  <td className="py-4 px-6">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                        {student.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                      </div>
-                      <div className="ml-3">
-                        <p className="font-medium text-gray-900">{student.name}</p>
-                        <p className="text-sm text-gray-500">{student.country}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <p className="font-medium text-gray-900">{student.course}</p>
-                    <p className="text-sm text-gray-500">{student.intake}</p>
-                  </td>
-                  <td className="py-4 px-6 text-gray-900">{student.university}</td>
-                  <td className="py-4 px-6">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
-                      {student.status}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center">
-                      <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                        <div 
-                          className="bg-green-500 h-2 rounded-full" 
-                          style={{ width: `${student.leadScore}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-sm text-gray-600">{student.leadScore}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex space-x-2">
-                        <Button 
-                          variant="ghost"
-                          size="icon"
-                        onClick={() => setSelectedStudent(student)}
-                      >
-                        <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                        <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                        <MessageSquare className="h-4 w-4" />
-                        </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-
-  const StudentDashboard = () => (
-    <div className="space-y-6">
-      {/* Welcome Section */}
-      <Card className="bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <CardHeader>
-          <CardTitle className="text-3xl">Welcome back, Sarah!</CardTitle>
-          <CardDescription className="text-blue-100">
-            Your application is progressing well. Here&apos;s your latest update.
-          </CardDescription>
-        </CardHeader>
-      </Card>
-
-      {/* Progress Tracker */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Application Progress</CardTitle>
-        </CardHeader>
-        <CardContent>
-        <div className="flex items-center justify-between mb-4">
-          {[
-            { step: 1, label: 'Application Submitted', completed: true },
-            { step: 2, label: 'Documents Verified', completed: true },
-            { step: 3, label: 'Offer Received', completed: false, current: true },
-            { step: 4, label: 'Visa Processing', completed: false },
-            { step: 5, label: 'Enrollment Confirmed', completed: false }
-          ].map((item, index) => (
-            <div key={index} className="flex flex-col items-center flex-1">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium mb-2 ${
-                item.completed ? 'bg-green-500 text-white' : 
-                item.current ? 'bg-blue-500 text-white' : 
-                'bg-gray-200 text-gray-500'
-              }`}>
-                {item.completed ? <CheckCircle className="h-5 w-5" /> : item.step}
-              </div>
-              <p className={`text-xs text-center ${item.current ? 'text-blue-600 font-medium' : 'text-gray-500'}`}>
-                {item.label}
-              </p>
-              {index < 4 && (
-                <div className={`absolute h-0.5 w-16 mt-5 ${item.completed ? 'bg-green-500' : 'bg-gray-200'}`} 
-                     style={{ marginLeft: '3rem' }} />
-              )}
-            </div>
-          ))}
-        </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-          <div className="flex items-center mb-4">
-              <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                <FileText className="h-6 w-6 text-blue-600" />
-              </div>
-              <div>
-                <CardTitle>Document Upload</CardTitle>
-                <CardDescription>Upload your required documents</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { label: 'Passport Copy', status: 'uploaded', icon: <CheckCircle className="h-5 w-5 text-green-500" /> },
-                { label: 'Academic Transcripts', status: 'pending', icon: <Clock className="h-5 w-5 text-yellow-500" /> },
-                { label: 'English Test Scores', status: 'uploaded', icon: <CheckCircle className="h-5 w-5 text-green-500" /> },
-                { label: 'Personal Statement', status: 'missing', icon: <AlertCircle className="h-5 w-5 text-red-500" /> }
-              ].map((doc, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div className="flex items-center">
-                    {doc.icon}
-                    <span className="ml-3 text-gray-700">{doc.label}</span>
-                  </div>
-                  <Button variant="link" className="text-blue-600 hover:text-blue-700">
-                    {doc.status === 'uploaded' ? 'View' : 'Upload'}
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center mb-4">
-              <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                <MessageSquare className="h-6 w-6 text-purple-600" />
-              </div>
-              <div>
-                <CardTitle>Recent Messages</CardTitle>
-                <CardDescription>Communications with your advisor</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { 
-                  sender: 'Admission Advisor',
-                  message: 'Your application has been reviewed. Please upload your personal statement.',
-                  time: '2 hours ago',
-                  unread: true
-                },
-                {
-                  sender: 'Visa Support',
-                  message: 'Your visa application is being processed. We will update you soon.',
-                  time: '1 day ago',
-                  unread: false
-                }
-              ].map((msg, index) => (
-                <div key={index} className={`p-4 rounded-lg ${msg.unread ? 'bg-blue-50' : 'bg-gray-50'}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-gray-900">{msg.sender}</span>
-                    <span className="text-sm text-gray-500">{msg.time}</span>
-                  </div>
-                  <p className="text-gray-700">{msg.message}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-center mb-4">
-              <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                <Calendar className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <CardTitle>Important Dates</CardTitle>
-                <CardDescription>Upcoming deadlines and events</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[
-                { date: 'March 15, 2024', event: 'Personal Statement Deadline', status: 'upcoming' },
-                { date: 'April 1, 2024', event: 'Visa Application Deadline', status: 'upcoming' },
-                { date: 'May 15, 2024', event: 'Course Start Date', status: 'confirmed' }
-              ].map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium text-gray-900">{item.event}</p>
-                    <p className="text-sm text-gray-500">{item.date}</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    item.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {item.status === 'confirmed' ? 'Confirmed' : 'Upcoming'}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
+  const benefits = [
+    "Reduce application processing time by 60%",
+    "Improve student satisfaction scores by 45%",
+    "Increase application completion rates by 35%",
+    "Streamline document verification process",
+    "Real-time collaboration between departments",
+    "Comprehensive audit trails and reporting"
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${
+        isVisible ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <h1 className="text-xl font-bold text-gray-900">Student CRM</h1>
-              </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <Button
-                  variant={activeView === 'dashboard' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('dashboard')}
-                  className="inline-flex items-center"
-                >
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Dashboard
-                </Button>
-                <Button
-                  variant={activeView === 'students' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('students')}
-                  className="inline-flex items-center"
-                >
-                  <Users className="h-5 w-5 mr-2" />
-                  Students
-                </Button>
-                <Button
-                  variant={activeView === 'application' ? 'default' : 'ghost'}
-                  onClick={() => setActiveView('application')}
-                  className="inline-flex items-center"
-                >
-                  <FileText className="h-5 w-5 mr-2" />
-                  Applications
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="inline-flex items-center"
-                >
-                  <Settings className="h-5 w-5 mr-2" />
-                  Settings
-                </Button>
-              </div>
-            </div>
+          <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Button variant="ghost" size="icon">
-                <Search className="h-6 w-6" />
+              <Logo size="lg" />
+            </div>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">Features</a>
+              <a href="#benefits" className="text-gray-700 hover:text-blue-600 transition-colors">Benefits</a>
+              <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">Testimonials</a>
+              <Link href="/sign-in">
+                <Button variant="ghost">Sign In</Button>
+              </Link>
+              <Link href="/sign-up">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                variant="ghost"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
               </Button>
-              <Button variant="ghost" size="icon">
-                <Bell className="h-6 w-6" />
-              </Button>
-              <div className="ml-4 flex items-center">
-                <div className="h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium">
-                  SJ
+            </div>
+          </div>
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+            <div className="md:hidden bg-white border-t border-gray-200 py-4">
+              <div className="flex flex-col space-y-4">
+                <a href="#features" className="text-gray-700 hover:text-blue-600 px-4">Features</a>
+                <a href="#benefits" className="text-gray-700 hover:text-blue-600 px-4">Benefits</a>
+                <a href="#testimonials" className="text-gray-700 hover:text-blue-600 px-4">Testimonials</a>
+                <div className="px-4 space-y-2">
+                  <Link href="/sign-in">
+                    <Button variant="ghost" className="w-full">Sign In</Button>
+                  </Link>
+                  <Link href="/sign-up">
+                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                      Get Started
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </nav>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeView === 'dashboard' && <AdminDashboard />}
-        {activeView === 'students' && <StudentDashboard />}
-        {activeView === 'application' && <ApplicationForm onClose={() => {
-          setActiveView('dashboard');
-        }} onSubmit={() => {}} />}
-        {showApplicationForm && <ApplicationForm 
-                                  onClose={() => { 
-                                    setShowApplicationForm(false);
-                                  }} 
-                                  onSubmit={() => {}} />}
-        {showShareDialog && <ShareDialog />}
-      </main>
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className={`transition-all duration-1000 delay-300 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              Transform Your
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                {" "}Student CRM
+              </span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Streamline student applications, manage documents, and boost enrollment with our comprehensive CRM platform designed for educational institutions.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Link href="/sign-up">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-lg px-8 py-4">
+                  Start Free Trial
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+                <Play className="mr-2 h-5 w-5" />
+                Watch Demo
+              </Button>
+            </div>
+          </div>
 
-      {/* Footer */}
+          {/* Stats */}
+          <div className={`grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 transition-all duration-1000 delay-500 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+                    {stat.icon}
+                  </div>
+                </div>
+                <div className="text-3xl font-bold text-gray-900">{stat.number}</div>
+                <div className="text-gray-600">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Powerful Features for Modern Education
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Everything you need to manage student applications, track progress, and deliver exceptional experiences.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className={`group p-8 rounded-2xl border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
+                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${feature.color} text-white mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section id="benefits" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl font-bold text-gray-900 mb-6">
+                Why Choose FK CRM?
+              </h2>
+              <p className="text-xl text-gray-600 mb-8">
+                Join hundreds of educational institutions that have transformed their student management processes with our platform.
+              </p>
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0" />
+                    <span className="text-gray-700">{benefit}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8">
+                <Link href="/sign-up">
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                    Get Started Today
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="bg-white rounded-2xl shadow-2xl p-8">
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Users className="h-6 w-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Student Dashboard</h3>
+                      <p className="text-sm text-gray-600">Real-time application tracking</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                      <FileText className="h-6 w-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Document Center</h3>
+                      <p className="text-sm text-gray-600">Secure file management</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="h-6 w-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Analytics</h3>
+                      <p className="text-sm text-gray-600">Performance insights</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Trusted by Leading Institutions
+            </h2>
+            <p className="text-xl text-gray-600">
+              See what our customers say about FK CRM
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className={`bg-gradient-to-br from-gray-50 to-white p-8 rounded-2xl border border-gray-200 hover:shadow-xl transition-all duration-300 ${
+                  isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${index * 200}ms` }}
+              >
+                <div className="flex items-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-6 italic">&quot;{testimonial.content}&quot;</p>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold mr-4">
+                    {testimonial.avatar}
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-600">{testimonial.role}</p>
+                    <p className="text-sm text-gray-500">{testimonial.company}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-4xl font-bold text-white mb-6">
+            Ready to Transform Your Student Management?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Join thousands of institutions already using FK CRM to streamline their operations.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/sign-up">
+              <Button size="lg" variant="secondary" className="text-lg px-8 py-4">
+                Start Free Trial
+              </Button>
+            </Link>
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-600">
+              Contact Sales
+            </Button>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
-};
-
-export default CRMDemo;
+} 
