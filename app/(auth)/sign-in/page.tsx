@@ -1,14 +1,14 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Mail, Lock, ArrowRight, Github, Chrome } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, ArrowRight} from 'lucide-react';
 import Link from 'next/link';
-import { signIn} from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,11 +26,7 @@ type SignInForm = z.infer<typeof signInSchema>;
 
 export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const { login, googleLogin, isLoading } = useAuth();
 
   const form = useForm<SignInForm>({
     resolver: zodResolver(signInSchema),
@@ -40,97 +36,26 @@ export default function SignInPage() {
     }
   });
 
-  // Handle authentication errors from URL params
-  useEffect(() => {
-    const error = searchParams.get('error');
-    if (error) {
-      let errorMessage = 'An error occurred during sign in';
-      
-      switch (error) {
-        case 'CredentialsSignin':
-          errorMessage = 'Invalid email or password';
-          break;
-        case 'OAuthSignin':
-          errorMessage = 'OAuth sign in failed';
-          break;
-        case 'OAuthCallback':
-          errorMessage = 'OAuth callback failed';
-          break;
-        case 'OAuthCreateAccount':
-          errorMessage = 'Could not create OAuth account';
-          break;
-        case 'OAuthAccountNotLinked':
-          errorMessage = 'Email already exists with different provider';
-          break;
-        default:
-          errorMessage = 'An error occurred during authentication';
-      }
-      
-      toast.error(errorMessage);
-    }
-  }, [searchParams]);
-
   const onSubmit = async (values: SignInForm) => {
-    setIsLoading(true);
     try {
-      const result = await signIn('credentials', {
-        email: values.email,
-        password: values.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        toast.error('Invalid email or password');
-      } else {
-        toast.success('Signed in successfully!');
-        router.push('/dashboard');
-      }
+      await login(values.email, values.password);
+      toast.success('Signed in successfully!');
     } catch (error) {
-      toast.error('An error occurred during sign in');
-      console.error('Sign in error:', error);
-    } finally {
-      setIsLoading(false);
+      toast.error(error instanceof Error ? error.message : 'Invalid email or password');
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsGoogleLoading(true);
+  const handleGoogleSuccess = async (credential: string) => {
     try {
-      const result = await signIn('google', {
-        callbackUrl: '/dashboard',
-        redirect: false,
-      });
-
-      if (result?.error) {
-        toast.error('Google sign in failed');
-      } else if (result?.url) {
-        router.push(result.url);
-      }
+      await googleLogin(credential);
+      toast.success('Signed in with Google successfully!');
     } catch (error) {
-      toast.error('An error occurred during Google sign in');
-    } finally {
-      setIsGoogleLoading(false);
+      toast.error(error instanceof Error ? error.message : 'Google sign in failed');
     }
   };
 
-  const handleGitHubSignIn = async () => {
-    setIsGitHubLoading(true);
-    try {
-      const result = await signIn('github', {
-        callbackUrl: '/dashboard',
-        redirect: false,
-      });
-
-      if (result?.error) {
-        toast.error('GitHub sign in failed');
-      } else if (result?.url) {
-        router.push(result.url);
-      }
-    } catch (error) {
-      toast.error('An error occurred during GitHub sign in');
-    } finally {
-      setIsGitHubLoading(false);
-    }
+  const handleGoogleError = () => {
+    toast.error('Google sign in failed');
   };
 
   return (
@@ -255,25 +180,15 @@ export default function SignInPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                disabled={isGoogleLoading}
-                onClick={handleGoogleSignIn}
-              >
-                <Chrome className="h-4 w-4 mr-2" />
-                Google
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full" 
-                disabled={isGitHubLoading}
-                onClick={handleGitHubSignIn}
-              >
-                <Github className="h-4 w-4 mr-2" />
-                GitHub
-              </Button>
+            <div className="flex justify-center">
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  if (credentialResponse.credential) {
+                    handleGoogleSuccess(credentialResponse.credential);
+                  }
+                }}
+                onError={handleGoogleError}
+              />
             </div>
           </CardContent>
 

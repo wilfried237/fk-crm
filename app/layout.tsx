@@ -1,7 +1,8 @@
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 import type { Metadata } from 'next'
-import AuthProvider from '@/components/providers/session-provider'
+import { AuthProvider } from '@/contexts/AuthContext'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 
 export const metadata: Metadata = {
   title: 'Student CRM',
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>
-          {children}
-          <Toaster />
-        </AuthProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   )
