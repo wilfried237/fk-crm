@@ -90,6 +90,7 @@ function VerifyEmailContent() {
         toast.error(data.error);
       }
     } catch (error) {
+      console.error('Error resending verification email:', error);
       toast.error('Failed to resend verification email');
     }
   };
