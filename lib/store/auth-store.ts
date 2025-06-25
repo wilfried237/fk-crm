@@ -23,7 +23,7 @@ interface AuthState {
   checkAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, _get) => ({
+export const useAuthStore = create<AuthState>((set, ) => ({
   user: null,
   isLoading: false,
   isAuthenticated: false,
@@ -46,6 +46,7 @@ export const useAuthStore = create<AuthState>((set, _get) => ({
       }
     } catch (error) {
       set({ user: null, isAuthenticated: false, isLoading: false });
+      console.error('Error checking auth:', error);
     }
   },
 

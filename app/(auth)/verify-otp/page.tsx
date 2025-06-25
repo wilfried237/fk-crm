@@ -242,11 +242,11 @@ export default function VerifyOtpPage() {
               <div className="flex items-start">
                 <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
                 <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Didn't receive the code?</p>
+                  <p className="font-medium mb-1">Didn&apos;t receive the code?</p>
                   <ul className="space-y-1 text-blue-700">
                     <li>• Check your email inbox and spam folder</li>
                     <li>• The code expires in 10 minutes</li>
-                    <li>• Click "Resend code" if needed</li>
+                    <li>• Click &quot;Resend code&quot; if needed</li>
                   </ul>
                 </div>
               </div>

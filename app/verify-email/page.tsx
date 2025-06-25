@@ -6,12 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
 import { toast } from 'sonner';
+import useAxiosErrorHandler from '@/hooks/useAxiosHandler';
 
 export default function VerifyEmailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  
+  const { handleError } = useAxiosErrorHandler();
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -53,6 +54,7 @@ export default function VerifyEmailPage() {
       setVerificationStatus('error');
       setMessage('An error occurred during verification.');
       toast.error('Verification failed');
+      handleError(error);
     } finally {
       setIsVerifying(false);
     }
@@ -88,6 +90,7 @@ export default function VerifyEmailPage() {
         toast.error(data.error);
       }
     } catch (error) {
+      handleError(error);
       toast.error('Failed to resend verification email');
     }
   };
