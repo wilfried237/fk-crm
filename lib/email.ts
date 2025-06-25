@@ -3,9 +3,9 @@ import nodemailer from 'nodemailer';
 // Email provider configurations
 export const emailProviders = {
   gmail: {
-    service: 'gmail',
-    auth: {
-      user: process.env.GMAIL_USER,
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_APP_PASSWORD, // Use App Password, not regular password
     },
   },
@@ -171,7 +171,7 @@ export async function sendVerificationEmail(email: string, name: string, token: 
               <strong>Important:</strong> This verification link will expire in 24 hours. 
               If you didn't create an account with FK CRM, you can safely ignore this email.
             </p>
-          </div>
+    </div>
           
           <p style="color: #666; line-height: 1.6; margin-top: 25px;">
             Best regards,<br>
@@ -380,4 +380,4 @@ export const sendWelcomeEmail = async (
     
     return false;
   }
-}; 
+};
