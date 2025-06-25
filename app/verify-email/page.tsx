@@ -1,18 +1,18 @@
 "use client"
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { CheckCircle, XCircle, Loader2, Mail } from 'lucide-react';
 import { toast } from 'sonner';
-import useAxiosErrorHandler from '@/hooks/useAxiosHandler';
+import Loading from '@/components/ui/loading';
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const { handleError } = useAxiosErrorHandler();
+  
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -51,10 +51,10 @@ export default function VerifyEmailPage() {
         toast.error(data.error);
       }
     } catch (error) {
+      console.error('Error verifying email:', error);
       setVerificationStatus('error');
       setMessage('An error occurred during verification.');
       toast.error('Verification failed');
-      handleError(error);
     } finally {
       setIsVerifying(false);
     }
@@ -90,7 +90,6 @@ export default function VerifyEmailPage() {
         toast.error(data.error);
       }
     } catch (error) {
-      handleError(error);
       toast.error('Failed to resend verification email');
     }
   };
@@ -168,5 +167,22 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <Loading
+          fullScreen
+          text="Loading verification page..."
+          subtitle="Please wait"
+          color="blue"
+        />
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   );
 } 
