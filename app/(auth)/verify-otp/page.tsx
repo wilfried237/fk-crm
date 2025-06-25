@@ -1,11 +1,11 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, CheckCircle, AlertCircle, Mail } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -14,6 +14,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { Logo } from "@/components/ui/logo"
+import Loading from '@/components/ui/loading';
 
 const otpSchema = z.object({
   otp: z.string().length(6, "Please enter the 6-digit code"),
@@ -21,7 +22,7 @@ const otpSchema = z.object({
 
 type OtpForm = z.infer<typeof otpSchema>;
 
-export default function VerifyOtpPage() {
+function VerifyOtpContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get('email');
@@ -238,66 +239,59 @@ export default function VerifyOtpPage() {
               </form>
             </Form>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">Didn&apos;t receive the code?</p>
-                  <ul className="space-y-1 text-blue-700">
-                    <li>• Check your email inbox and spam folder</li>
-                    <li>• The code expires in 10 minutes</li>
-                    <li>• Click &quot;Resend code&quot; if needed</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
+            <div className="text-center">
               <Button 
                 onClick={handleResendCode}
-                disabled={isLoading}
                 variant="outline"
-                className="w-full"
+                size="sm"
+                disabled={isLoading}
+                className="text-sm"
               >
-                {isLoading ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
-                    <span>Resending...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <Mail className="h-4 w-4" />
-                    <span>Resend code</span>
-                  </div>
-                )}
-              </Button>
-
-              <Button 
-                onClick={() => router.push('/forgot-password')}
-                variant="ghost"
-                className="w-full"
-              >
-                <div className="flex items-center space-x-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Back to forgot password</span>
-                </div>
+                <Mail className="h-4 w-4 mr-2" />
+                Resend Code
               </Button>
             </div>
           </CardContent>
 
           <CardFooter className="flex justify-center pt-4">
-            <p className="text-sm text-gray-600">
-              Remember your password?{' '}
+            <div className="text-center space-y-2">
+              <p className="text-sm text-gray-600">
+                Remember your password?{' '}
+                <Link 
+                  href="/sign-in"
+                  className="font-medium text-blue-600 hover:text-blue-700"
+                >
+                  Sign in
+                </Link>
+              </p>
               <Link 
-                href="/sign-in"
-                className="font-medium text-blue-600 hover:text-blue-700"
+                href="/forgot-password"
+                className="text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center space-x-1"
               >
-                Sign in
+                <ArrowLeft className="h-3 w-3" />
+                <span>Back to forgot password</span>
               </Link>
-            </p>
+            </div>
           </CardFooter>
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <Loading
+          fullScreen
+          text="Loading verification page..."
+          subtitle="Please wait"
+          color="blue"
+        />
+      </div>
+    }>
+      <VerifyOtpContent />
+    </Suspense>
   );
 } 
