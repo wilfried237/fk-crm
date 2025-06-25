@@ -21,6 +21,7 @@ export async function POST(req: Request) {
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET as string) as VerificationPayload;
     } catch (error) {
+      console.error('Error verifying token:', error);
       return NextResponse.json({ error: 'Invalid or expired verification token.' }, { status: 400 });
     }
 
