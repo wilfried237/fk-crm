@@ -78,7 +78,22 @@ export async function POST(req: Request) {
       });
     } catch (dbError) {
       console.error('❌ Database error finding user:', dbError);
-      return NextResponse.json({ error: 'Database error.' }, { status: 500 });
+      
+      // Provide more specific error information
+      let errorMessage = 'Database error.';
+      if (dbError instanceof Error) {
+        if (dbError.message.includes('P1001')) {
+          errorMessage = 'Database connection failed. Please try again.';
+        } else if (dbError.message.includes('P2002')) {
+          errorMessage = 'User already exists with different credentials.';
+        } else if (dbError.message.includes('P2025')) {
+          errorMessage = 'Database record not found.';
+        } else {
+          errorMessage = `Database error: ${dbError.message}`;
+        }
+      }
+      
+      return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
     
     if(user && !user.emailVerified){
