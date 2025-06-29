@@ -22,6 +22,8 @@ import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/ui/logo";
 import { Footer } from "@/components/ui/footer";
+import { UserButton } from '@/components/ui/user-button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Feature {
   icon: React.ReactNode;
@@ -48,7 +50,7 @@ interface Stat {
 export default function LandingPage() {
   const [isVisible, setIsVisible] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { isAuthenticated, user } = useAuth();
   useEffect(() => {
     setIsVisible(true);
   }, []);
@@ -144,7 +146,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Logo size="lg" />
+              <Logo size="md" />
             </div>
             
             {/* Desktop Navigation */}
@@ -152,18 +154,44 @@ export default function LandingPage() {
               <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">Features</a>
               <a href="#benefits" className="text-gray-700 hover:text-blue-600 transition-colors">Benefits</a>
               <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">Testimonials</a>
-              <Link href="/sign-in">
-                <Button variant="ghost">Sign In</Button>
-              </Link>
-              <Link href="/sign-up">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                  Get Started
-                </Button>
-              </Link>
+              {
+                isAuthenticated && user ? (
+                  <UserButton 
+                    variant="dropdown"
+                    size="md"
+                    showName={true}
+                    showEmail={true}
+                    showRole={false}
+                  />
+                ) : (
+                  <>
+                    <Link href="/sign-in">
+                      <Button variant="ghost">Sign In</Button>
+                    </Link>
+                    <Link href="/sign-up">
+                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                        Get Started
+                      </Button>
+                    </Link>
+                  </>
+                )
+              }
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center ">
+            {
+
+                  isAuthenticated && user && (
+                    <UserButton 
+                      variant="minimal"
+                      size="md"
+                      showName={true}
+                      showEmail={true}
+                      showRole={false}
+                    />
+                  ) 
+                }
               <Button
                 variant="ghost"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -181,14 +209,20 @@ export default function LandingPage() {
                 <a href="#benefits" className="text-gray-700 hover:text-blue-600 px-4">Benefits</a>
                 <a href="#testimonials" className="text-gray-700 hover:text-blue-600 px-4">Testimonials</a>
                 <div className="px-4 space-y-2">
-                  <Link href="/sign-in">
-                    <Button variant="ghost" className="w-full">Sign In</Button>
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                      Get Started
-                    </Button>
-                  </Link>
+                  {
+                    isAuthenticated === false && (
+                      <>
+                        <Link href="/sign-in">
+                          <Button variant="ghost" className="w-full">Sign In</Button>
+                        </Link>
+                        <Link href="/sign-up">
+                          <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                            Get Started
+                          </Button>
+                        </Link>
+                      </>
+                    ) 
+                  }
                 </div>
               </div>
             </div>
@@ -398,7 +432,7 @@ export default function LandingPage() {
                 Start Free Trial
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-600">
+            <Button size="lg" variant="outline" className="text-lg px-8 py-4 border-white text-blue-600 hover:bg-white">
               Contact Sales
             </Button>
           </div>

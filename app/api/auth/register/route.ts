@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail} from '@/lib/email';
 
 export async function POST(req: Request) {
   try {

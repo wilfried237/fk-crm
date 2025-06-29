@@ -381,3 +381,200 @@ export const sendWelcomeEmail = async (
     return false;
   }
 };
+
+// Email transporter configuration
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+export interface EmailOptions {
+  to: string;
+  subject: string;
+  html: string;
+  text?: string;
+}
+
+export const sendEmail = async (options: EmailOptions) => {
+  try {
+    const mailOptions = {
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      text: options.text,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    throw new Error('Failed to send email');
+  }
+};
+
+export const sendApplicationConfirmationEmail = async (
+  email: string,
+  firstName: string,
+  lastName: string,
+  applicationId: string
+) => {
+  const subject = 'Application Submitted Successfully - FK Education';
+  
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Application Confirmation</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 30px;
+          text-align: center;
+          border-radius: 10px 10px 0 0;
+        }
+        .content {
+          background: #f9f9f9;
+          padding: 30px;
+          border-radius: 0 0 10px 10px;
+        }
+        .button {
+          display: inline-block;
+          background: #667eea;
+          color: white;
+          padding: 12px 24px;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 20px 0;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+          color: #666;
+          font-size: 14px;
+        }
+        .highlight {
+          background: #e8f4fd;
+          padding: 15px;
+          border-left: 4px solid #667eea;
+          margin: 20px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>🎓 Application Submitted Successfully!</h1>
+        <p>Thank you for choosing FK Education</p>
+      </div>
+      
+      <div class="content">
+        <h2>Dear ${firstName} ${lastName},</h2>
+        
+        <p>We are pleased to confirm that your student application has been successfully submitted and is now under review.</p>
+        
+        <div class="highlight">
+          <strong>Application ID:</strong> ${applicationId}<br>
+          <strong>Submission Date:</strong> ${new Date().toLocaleDateString()}<br>
+          <strong>Status:</strong> Pending Review
+        </div>
+        
+        <h3>What happens next?</h3>
+        <ol>
+          <li><strong>Document Review:</strong> Our team will review all submitted documents and information</li>
+          <li><strong>Assessment:</strong> Your application will be evaluated based on academic requirements</li>
+          <li><strong>Interview:</strong> You may be contacted for an interview if required</li>
+          <li><strong>Decision:</strong> You will receive a decision within 2-3 weeks</li>
+        </ol>
+        
+        <h3>Important Information:</h3>
+        <ul>
+          <li>Please keep this email for your records</li>
+          <li>You can track your application status using your Application ID</li>
+          <li>If you need to update any information, please contact us immediately</li>
+          <li>Ensure all contact information remains current</li>
+        </ul>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact us:</p>
+        <ul>
+          <li>Email: support@fkeducation.com</li>
+          <li>Phone: +1 (555) 123-4567</li>
+          <li>WhatsApp: +1 (555) 123-4567</li>
+        </ul>
+        
+        <p>We wish you the best of luck with your application!</p>
+        
+        <p>Best regards,<br>
+        <strong>The FK Education Team</strong></p>
+      </div>
+      
+      <div class="footer">
+        <p>This is an automated message. Please do not reply to this email.</p>
+        <p>© 2024 FK Education. All rights reserved.</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const text = `
+    Application Submitted Successfully - FK Education
+    
+    Dear ${firstName} ${lastName},
+    
+    We are pleased to confirm that your student application has been successfully submitted and is now under review.
+    
+    Application ID: ${applicationId}
+    Submission Date: ${new Date().toLocaleDateString()}
+    Status: Pending Review
+    
+    What happens next?
+    1. Document Review: Our team will review all submitted documents and information
+    2. Assessment: Your application will be evaluated based on academic requirements
+    3. Interview: You may be contacted for an interview if required
+    4. Decision: You will receive a decision within 2-3 weeks
+    
+    Important Information:
+    - Please keep this email for your records
+    - You can track your application status using your Application ID
+    - If you need to update any information, please contact us immediately
+    - Ensure all contact information remains current
+    
+    Contact Information:
+    Email: support@fkeducation.com
+    Phone: +1 (555) 123-4567
+    WhatsApp: +1 (555) 123-4567
+    
+    We wish you the best of luck with your application!
+    
+    Best regards,
+    The FK Education Team
+    
+    This is an automated message. Please do not reply to this email.
+    © 2024 FK Education. All rights reserved.
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html,
+    text,
+  });
+};

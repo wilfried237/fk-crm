@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { LogOut, User, Mail, Shield, RefreshCw, Database } from 'lucide-react';
+import { LogOut, User, Mail, Shield, RefreshCw, Database, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -18,11 +18,26 @@ interface UserData {
   image?: string | null;
 }
 
+interface ApplicationStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+  waitlisted: number;
+}
+
 export default function DashboardPage() {
   const { user, isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoadingUserData, setIsLoadingUserData] = useState(false);
+  const [applicationStats, setApplicationStats] = useState<ApplicationStats>({
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    waitlisted: 0
+  });
 
   const fetchUserData = async () => {
     setIsLoadingUserData(true);
@@ -45,9 +60,32 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchApplicationStats = async () => {
+    try {
+      const response = await fetch('/api/applications/admin');
+      if (response.ok) {
+        const data = await response.json();
+        const applications = data.applications;
+        
+        const stats = {
+          total: applications.length,
+          pending: applications.filter((app: any) => app.status === 'PENDING').length,
+          approved: applications.filter((app: any) => app.status === 'APPROVED').length,
+          rejected: applications.filter((app: any) => app.status === 'REJECTED').length,
+          waitlisted: applications.filter((app: any) => app.status === 'WAITLISTED').length,
+        };
+        
+        setApplicationStats(stats);
+      }
+    } catch (error) {
+      console.error('Error fetching application stats:', error);
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated && user) {
       fetchUserData();
+      fetchApplicationStats();
     }
   }, [isAuthenticated, user]);
 
@@ -67,6 +105,14 @@ export default function DashboardPage() {
               <p className="text-gray-600">Welcome to FK CRM</p>
             </div>
             <div className="flex items-center space-x-4">
+              <Button 
+                onClick={() => router.push('/dashboard/applications')}
+                variant="outline"
+                className="flex items-center space-x-2"
+              >
+                <FileText className="h-4 w-4" />
+                <span>Manage Applications</span>
+              </Button>
               <Button 
                 onClick={() => router.push('/dashboard/oauth-data')}
                 variant="outline"
@@ -155,8 +201,8 @@ export default function DashboardPage() {
                 <CardTitle className="text-lg">Total Students</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-blue-600">0</p>
-                <p className="text-sm text-gray-500">No students yet</p>
+                <p className="text-3xl font-bold text-blue-600">{applicationStats.total}</p>
+                <p className="text-sm text-gray-500">Total students</p>
               </CardContent>
             </Card>
             
@@ -165,8 +211,8 @@ export default function DashboardPage() {
                 <CardTitle className="text-lg">Active Applications</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-green-600">0</p>
-                <p className="text-sm text-gray-500">No applications yet</p>
+                <p className="text-3xl font-bold text-green-600">{applicationStats.approved}</p>
+                <p className="text-sm text-gray-500">Approved applications</p>
               </CardContent>
             </Card>
             
@@ -175,8 +221,8 @@ export default function DashboardPage() {
                 <CardTitle className="text-lg">Pending Reviews</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-orange-600">0</p>
-                <p className="text-sm text-gray-500">No pending reviews</p>
+                <p className="text-3xl font-bold text-orange-600">{applicationStats.pending}</p>
+                <p className="text-sm text-gray-500">Pending applications</p>
               </CardContent>
             </Card>
           </div>

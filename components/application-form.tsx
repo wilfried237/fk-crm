@@ -47,6 +47,8 @@ interface UploadedFile {
   error?: string;
   preview?: string;
   uploadProgress?: number;
+  fileUrl?: string;
+  s3Key?: string;
 }
 
 // Form data type derived from Zod schema
@@ -178,20 +180,54 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
         [type]: [...prev[type], ...newFiles]
       }));
 
-      // Simulate file upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Update status to uploaded
+      // Upload files to backend
+      const uploadPromises = newFiles.map(async (fileData) => {
+        try {
+          const formData = new FormData();
+          formData.append('file', fileData.file);
+          formData.append('type', type);
+
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (!response.ok) {
+            throw new Error('Upload failed');
+          }
+
+          const result = await response.json();
+          
+          // Update file with uploaded data
+          return {
+            ...fileData,
+            status: 'uploaded' as const,
+            fileUrl: result.fileUrl,
+            s3Key: result.s3Key,
+          };
+        } catch (error) {
+          return {
+            ...fileData,
+            status: 'error' as const,
+            error: 'Failed to upload file'
+          };
+        }
+      });
+
+      const uploadedFiles = await Promise.all(uploadPromises);
+
+      // Update documents state with upload results
       setDocuments(prev => ({
         ...prev,
-        [type]: prev[type].map(file => 
-          newFiles.some(newFile => newFile.id === file.id) 
-            ? { ...file, status: 'uploaded' as const }
-            : file
-        )
+        [type]: prev[type].map(file => {
+          const uploadedFile = uploadedFiles.find(uf => uf.id === file.id);
+          return uploadedFile || file;
+        })
       }));
+
     } catch (error) {
-      // Update status to error
+      console.error('File upload error:', error);
+      // Update status to error for all files
       setDocuments(prev => ({
         ...prev,
         [type]: prev[type].map(file => 
@@ -203,7 +239,6 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
             : file
         )
       }));
-      console.error('File upload error:', error);
     }
   }, []);
 

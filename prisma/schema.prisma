@@ -22,9 +22,66 @@ model User {
   image               String?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+  applications        Application[]
 }
 
 enum UserRole {
   ADMIN
   USER
+}
+
+model Application {
+  id                  String    @id @default(cuid())
+  userId              String?
+  firstName           String
+  lastName            String
+  email               String
+  phone               String
+  dateOfBirth         DateTime
+  nationality         String
+  homeAddress         String
+  university          String
+  course              String
+  courseLevel         String
+  preferredIntake     String
+  previousEducation   String
+  englishProficiency  String
+  englishScore        String?
+  emergencyContact    String
+  emergencyPhone      String
+  financialSupport    String?
+  notes               String?
+  status              ApplicationStatus @default(PENDING)
+  submittedAt         DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  documents           ApplicationDocument[]
+  user                User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model ApplicationDocument {
+  id            String      @id @default(cuid())
+  applicationId String
+  type          DocumentType
+  fileName      String
+  fileUrl       String
+  fileSize      Int
+  mimeType      String
+  uploadedAt    DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+}
+
+enum ApplicationStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  WAITLISTED
+}
+
+enum DocumentType {
+  PASSPORT
+  TRANSCRIPTS
+  ENGLISH_TEST
+  PERSONAL_STATEMENT
+  REFERENCES
 }
