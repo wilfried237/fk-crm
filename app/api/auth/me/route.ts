@@ -1,13 +1,7 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { prisma } from '@/lib/prisma';
-
-interface JWTPayload {
-  id: string;
-  email: string;
-  name?: string;
-  role: string;
-}
+import { JWTPayload, User } from '@/types/user';
 
 export async function GET(req: Request) {
   try {
@@ -45,7 +39,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    return NextResponse.json({ user });
+    return NextResponse.json({ user: user as User });
   } catch (error) {
     console.error('Auth check error:', error);
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });

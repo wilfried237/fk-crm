@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server';
+// import { NextRequest } from 'next/server';
 
 // Simple admin check - you can enhance this with proper authentication
-export function isAdmin(request: NextRequest): boolean {
+export function isAdmin(): boolean {
   // For now, we'll allow all access to admin routes
   // In production, you should implement proper admin authentication
   // This could be based on user role, JWT tokens, or session data

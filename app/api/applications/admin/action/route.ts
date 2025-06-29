@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
 import { isAdmin } from '@/lib/admin-auth';
 import { z } from 'zod';
+import { AdminActionRequest, AdminActionResponse, StatusEmailConfigs } from '@/types/admin';
 
 // Validation schema for admin actions
 const actionSchema = z.object({
@@ -14,9 +15,9 @@ const actionSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     // Check if user is admin
-    if (!isAdmin(request)) {
+    if (!isAdmin()) {
       return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
+        { success: false, error: 'Unauthorized - Admin access required' } as AdminActionResponse,
         { status: 403 }
       );
     }
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Validate the request body
-    const validatedData = actionSchema.parse(body);
+    const validatedData: AdminActionRequest = actionSchema.parse(body);
     
     // Find the application
     const application = await prisma.application.findUnique({
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     if (!application) {
       return NextResponse.json(
-        { error: 'Application not found' },
+        { success: false, error: 'Application not found' } as AdminActionResponse,
         { status: 404 }
       );
     }
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
         break;
       default:
         return NextResponse.json(
-          { error: 'Invalid action' },
+          { success: false, error: 'Invalid action' } as AdminActionResponse,
           { status: 400 }
         );
     }
@@ -98,13 +99,13 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.errors } as AdminActionResponse,
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Internal server error' } as AdminActionResponse,
       { status: 500 }
     );
   }
@@ -119,7 +120,7 @@ async function sendApplicationStatusEmail(
   status: string,
   reason?: string
 ) {
-  const statusConfig = {
+  const statusConfig: StatusEmailConfigs = {
     APPROVED: {
       subject: 'Application Approved - FK Education',
       color: '#10B981',
@@ -143,7 +144,7 @@ async function sendApplicationStatusEmail(
     }
   };
 
-  const config = statusConfig[status as keyof typeof statusConfig];
+  const config = statusConfig[status as keyof StatusEmailConfigs];
   
   const html = `
     <!DOCTYPE html>
@@ -198,133 +199,60 @@ async function sendApplicationStatusEmail(
         }
         .reason-box {
           background: #fef3c7;
-          border: 1px solid #f59e0b;
-          border-radius: 8px;
           padding: 15px;
+          border-left: 4px solid #f59e0b;
           margin: 20px 0;
+          border-radius: 4px;
         }
       </style>
     </head>
     <body>
       <div class="header">
-        <h1>${config.icon} Application Status Update</h1>
-        <p>FK Education</p>
+        <h1>${config.icon} FK Education</h1>
+        <p>Application Status Update</p>
       </div>
       
       <div class="content">
-        <h2>Dear ${firstName} ${lastName},</h2>
+        <h2>${config.title}</h2>
         
         <div class="status-badge">
-          ${status.replace('_', ' ')}
+          ${config.icon} ${status}
         </div>
         
-        <h3>${config.title}</h3>
+        <p>Dear ${firstName} ${lastName},</p>
         
         <p>${config.message}</p>
         
         <div class="highlight">
           <strong>Application ID:</strong> ${applicationId}<br>
-          <strong>Status:</strong> ${status.replace('_', ' ')}<br>
+          <strong>Status:</strong> ${status}<br>
           <strong>Date:</strong> ${new Date().toLocaleDateString()}
         </div>
         
         ${reason ? `
         <div class="reason-box">
-          <h4>Additional Information:</h4>
-          <p>${reason}</p>
+          <strong>Additional Information:</strong><br>
+          ${reason}
         </div>
         ` : ''}
         
-        <h3>Next Steps:</h3>
-        ${status === 'APPROVED' ? `
-        <ol>
-          <li>You will receive detailed enrollment instructions within 48 hours</li>
-          <li>Complete any additional requirements as specified</li>
-          <li>Prepare for your academic journey</li>
-        </ol>
-        ` : status === 'REJECTED' ? `
-        <ul>
-          <li>You may reapply for future intakes</li>
-          <li>Consider addressing any areas mentioned in the feedback</li>
-          <li>Contact us if you have questions about the decision</li>
-        </ul>
-        ` : `
-        <ul>
-          <li>We will contact you if a spot becomes available</li>
-          <li>You may also apply for other intakes</li>
-          <li>Keep your contact information updated</li>
-        </ul>
-        `}
-        
-        <p>If you have any questions, please don't hesitate to contact us:</p>
-        <ul>
-          <li>Email: support@fkeducation.com</li>
-          <li>Phone: +1 (555) 123-4567</li>
-          <li>WhatsApp: +1 (555) 123-4567</li>
-        </ul>
-        
-        <p>Thank you for your interest in FK Education.</p>
+        <p>If you have any questions, please don't hesitate to contact us.</p>
         
         <p>Best regards,<br>
-        <strong>The FK Education Team</strong></p>
+        The FK Education Team</p>
       </div>
       
       <div class="footer">
         <p>This is an automated message. Please do not reply to this email.</p>
-        <p>© 2024 FK Education. All rights reserved.</p>
+        <p>&copy; 2024 FK Education. All rights reserved.</p>
       </div>
     </body>
     </html>
   `;
 
-  const text = `
-    Application Status Update - FK Education
-    
-    Dear ${firstName} ${lastName},
-    
-    ${config.title}
-    
-    ${config.message}
-    
-    Application ID: ${applicationId}
-    Status: ${status.replace('_', ' ')}
-    Date: ${new Date().toLocaleDateString()}
-    
-    ${reason ? `Additional Information: ${reason}` : ''}
-    
-    Next Steps:
-    ${status === 'APPROVED' ? `
-    1. You will receive detailed enrollment instructions within 48 hours
-    2. Complete any additional requirements as specified
-    3. Prepare for your academic journey
-    ` : status === 'REJECTED' ? `
-    - You may reapply for future intakes
-    - Consider addressing any areas mentioned in the feedback
-    - Contact us if you have questions about the decision
-    ` : `
-    - We will contact you if a spot becomes available
-    - You may also apply for other intakes
-    - Keep your contact information updated
-    `}
-    
-    Contact Information:
-    Email: support@fkeducation.com
-    Phone: +1 (555) 123-4567
-    WhatsApp: +1 (555) 123-4567
-    
-    Thank you for your interest in FK Education.
-    
-    Best regards,
-    The FK Education Team
-    
-    This is an automated message. Please do not reply to this email.
-    © 2024 FK Education. All rights reserved.
-  `;
-
-  return sendEmail({
+  await sendEmail({
     to: email,
     subject: config.subject,
-    html,
-    text,
+    html: html,
   });
 } 

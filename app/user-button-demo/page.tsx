@@ -187,11 +187,11 @@ export default function UserButtonDemo() {
               <div>
                 <h4 className="font-medium mb-2">Props:</h4>
                 <ul className="space-y-2 text-sm">
-                  <li><strong>variant:</strong> 'default' | 'minimal' | 'dropdown' | 'profile' - The visual style of the button</li>
-                  <li><strong>size:</strong> 'sm' | 'md' | 'lg' - The size of the button and avatar</li>
-                  <li><strong>showName:</strong> boolean - Whether to display the user's name</li>
-                  <li><strong>showEmail:</strong> boolean - Whether to display the user's email</li>
-                  <li><strong>showRole:</strong> boolean - Whether to display the user's role</li>
+                  <li><strong>variant:</strong> &apos;default&apos; | &apos;minimal&apos; | &apos;dropdown&apos; | &apos;profile&apos; - The visual style of the button</li>
+                  <li><strong>size:</strong> &apos;sm&apos; | &apos;md&apos; | &apos;lg&apos; - The size of the button and avatar</li>
+                  <li><strong>showName:</strong> boolean - Whether to display the user&apos;s name</li>
+                  <li><strong>showEmail:</strong> boolean - Whether to display the user&apos;s email</li>
+                  <li><strong>showRole:</strong> boolean - Whether to display the user&apos;s role</li>
                   <li><strong>className:</strong> string - Additional CSS classes</li>
                   <li><strong>onProfileClick:</strong> function - Custom handler for profile click</li>
                   <li><strong>onSettingsClick:</strong> function - Custom handler for settings click</li>

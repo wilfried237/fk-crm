@@ -1,13 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {  NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAdmin } from '@/lib/admin-auth';
+import { AdminApplicationsResponse } from '@/types/admin';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Check if user is admin
-    if (!isAdmin(request)) {
+    if (!isAdmin()) {
       return NextResponse.json(
-        { error: 'Unauthorized - Admin access required' },
+        { applications: [], total: 0, error: 'Unauthorized - Admin access required' } as AdminApplicationsResponse,
         { status: 403 }
       );
     }
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error fetching applications:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { applications: [], total: 0, error: 'Internal server error' } as AdminApplicationsResponse,
       { status: 500 }
     );
   }

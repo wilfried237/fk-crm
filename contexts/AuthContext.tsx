@@ -2,17 +2,7 @@
 
 import { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useAuthStore } from '@/lib/store/auth-store';
-
-interface AuthContextType {
-  user: any;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, name: string) => Promise<void>;
-  googleLogin: (credential: string) => Promise<void>;
-  logout: () => void;
-  checkAuth: () => Promise<void>;
-}
+import { AuthContextType } from '@/types/user';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -33,7 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, [checkAuth]);
 
-  const value = {
+  const value: AuthContextType = {
     user,
     isLoading,
     isAuthenticated,

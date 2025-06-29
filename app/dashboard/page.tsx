@@ -9,14 +9,8 @@ import { LogOut, User, Mail, Shield, RefreshCw, Database, FileText } from 'lucid
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
-
-interface UserData {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  role: string;
-  image?: string | null;
-}
+import { UserData } from '@/types/user';
+import { Application } from '@/types/application';
 
 interface ApplicationStats {
   total: number;
@@ -65,14 +59,14 @@ export default function DashboardPage() {
       const response = await fetch('/api/applications/admin');
       if (response.ok) {
         const data = await response.json();
-        const applications = data.applications;
+        const applications: Application[] = data.applications;
         
         const stats = {
           total: applications.length,
-          pending: applications.filter((app: any) => app.status === 'PENDING').length,
-          approved: applications.filter((app: any) => app.status === 'APPROVED').length,
-          rejected: applications.filter((app: any) => app.status === 'REJECTED').length,
-          waitlisted: applications.filter((app: any) => app.status === 'WAITLISTED').length,
+          pending: applications.filter((app: Application) => app.status === 'pending').length,
+          approved: applications.filter((app: Application) => app.status === 'accepted').length,
+          rejected: applications.filter((app: Application) => app.status === 'declined').length,
+          waitlisted: applications.filter((app: Application) => app.status === 'waitlisted').length,
         };
         
         setApplicationStats(stats);

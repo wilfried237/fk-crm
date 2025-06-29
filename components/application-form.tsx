@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
+import { ApplicationFormData, UploadedFile } from "@/types/application"
 
 // Zod Schema for form validation
 const applicationSchema = z.object({
@@ -39,18 +40,6 @@ const applicationSchema = z.object({
   notes: z.string().optional(),
 });
 
-// Document upload state interface for new multi-file component
-interface UploadedFile {
-  id: string;
-  file: File;
-  status: 'pending' | 'uploading' | 'uploaded' | 'error';
-  error?: string;
-  preview?: string;
-  uploadProgress?: number;
-  fileUrl?: string;
-  s3Key?: string;
-}
-
 // Form data type derived from Zod schema
 type FormData = z.infer<typeof applicationSchema> & {
   documents: {
@@ -64,7 +53,7 @@ type FormData = z.infer<typeof applicationSchema> & {
 
 interface ApplicationFormProps {
   onClose: () => void;
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: ApplicationFormData) => void;
 }
 
 export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
@@ -206,6 +195,7 @@ export function ApplicationForm({ onClose, onSubmit }: ApplicationFormProps) {
             s3Key: result.s3Key,
           };
         } catch (error) {
+          console.error('File upload error:', error);
           return {
             ...fileData,
             status: 'error' as const,

@@ -10,7 +10,7 @@ interface AdminRouteProps {
 }
 
 export default function AdminRoute({ children }: AdminRouteProps) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated} = useAuth();
   const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +56,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
         <div className="text-center">
           <div className="text-red-600 text-6xl mb-4">🚫</div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-          <p className="text-gray-600 mb-4">You don't have permission to access this page.</p>
+          <p className="text-gray-600 mb-4">You don&apos;t have permission to access this page.</p>
           <button
             onClick={() => router.push('/dashboard')}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"

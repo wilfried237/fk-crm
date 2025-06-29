@@ -3,45 +3,46 @@
 import React, { useState } from 'react';
 import { ApplicationForm } from '@/components/application-form';
 import { toast } from 'sonner';
+import { ApplicationFormData, TransformedApplicationData, TransformedDocument, ApplicationSubmissionResponse } from '@/types/application';
 
 export default function ApplyPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: ApplicationFormData) => {
     try {
       // Transform the data to match the API expectations
-      const transformedData = {
+      const transformedData: TransformedApplicationData = {
         ...data,
         documents: {
-          passport: data.documents.passport.map((file: any) => ({
+          passport: data.documents.passport.map((file): TransformedDocument => ({
             id: file.id,
             fileName: file.file.name,
             fileUrl: file.fileUrl || URL.createObjectURL(file.file),
             fileSize: file.file.size,
             mimeType: file.file.type,
           })),
-          transcripts: data.documents.transcripts.map((file: any) => ({
+          transcripts: data.documents.transcripts.map((file): TransformedDocument => ({
             id: file.id,
             fileName: file.file.name,
             fileUrl: file.fileUrl || URL.createObjectURL(file.file),
             fileSize: file.file.size,
             mimeType: file.file.type,
           })),
-          englishTest: data.documents.englishTest.map((file: any) => ({
+          englishTest: data.documents.englishTest.map((file): TransformedDocument => ({
             id: file.id,
             fileName: file.file.name,
             fileUrl: file.fileUrl || URL.createObjectURL(file.file),
             fileSize: file.file.size,
             mimeType: file.file.type,
           })),
-          personalStatement: data.documents.personalStatement.map((file: any) => ({
+          personalStatement: data.documents.personalStatement.map((file): TransformedDocument => ({
             id: file.id,
             fileName: file.file.name,
             fileUrl: file.fileUrl || URL.createObjectURL(file.file),
             fileSize: file.file.size,
             mimeType: file.file.type,
           })),
-          references: data.documents.references.map((file: any) => ({
+          references: data.documents.references.map((file): TransformedDocument => ({
             id: file.id,
             fileName: file.file.name,
             fileUrl: file.fileUrl || URL.createObjectURL(file.file),
@@ -59,7 +60,7 @@ export default function ApplyPage() {
         body: JSON.stringify(transformedData),
       });
 
-      const result = await response.json();
+      const result: ApplicationSubmissionResponse = await response.json();
 
       if (response.ok) {
         toast.success('Application submitted successfully! Check your email for confirmation.');

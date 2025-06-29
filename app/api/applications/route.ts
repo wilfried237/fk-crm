@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sendApplicationConfirmationEmail } from '@/lib/email';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { TransformedApplicationData, ApplicationSubmissionResponse } from '@/types/application';
 
 // Validation schema for application data
 const applicationSchema = z.object({
@@ -62,12 +63,12 @@ const applicationSchema = z.object({
   }),
 });
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse<ApplicationSubmissionResponse>> {
   try {
     const body = await request.json();
     
     // Validate the request body
-    const validatedData = applicationSchema.parse(body);
+    const validatedData: TransformedApplicationData = applicationSchema.parse(body);
     
     // Check if application with this email already exists
     const existingApplication = await prisma.application.findFirst({
@@ -81,7 +82,7 @@ export async function POST(request: NextRequest) {
 
     if (existingApplication) {
       return NextResponse.json(
-        { error: 'An application with this email is already pending review' },
+        { success: false, error: 'An application with this email is already pending review' },
         { status: 400 }
       );
     }
@@ -160,13 +161,13 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation failed', details: error.errors },
+        { success: false, error: 'Validation failed', details: error.errors },
         { status: 400 }
       );
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }
